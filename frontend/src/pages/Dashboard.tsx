@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Car,
   Activity,
@@ -11,6 +11,8 @@ import {
   Maximize2,
   Sliders,
   ChevronRight,
+  BrainCircuit,
+  Cpu,
 } from "lucide-react";
 
 import Header from "../components/layout/Header";
@@ -20,6 +22,8 @@ import TrafficChart from "../components/dashboard/TrafficChart";
 import TrafficMap from "../components/map/TrafficMap";
 import CongestionCard from "../components/traffic/CongestionCard";
 import SignalCard from "../components/traffic/SignalCard";
+import { predictTraffic } from "../services/api";
+import type { TrafficPrediction } from "../types/traffic";
 
 import {
   trafficConditions,
@@ -30,7 +34,55 @@ import {
 export const Dashboard: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [selectedJunction, setSelectedJunction] = useState<string>("J-01");
+  const [selectedJunction, setSelectedJunction] = useState<string>("J-001");
+  const [predictions, setPredictions] = useState<Record<string, TrafficPrediction>>({});
+  const [isLoadingPredictions, setIsLoadingPredictions] = useState<boolean>(false);
+  const [predictionError, setPredictionError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadMLPredictions() {
+      setIsLoadingPredictions(true);
+      setPredictionError(null);
+      const results: Record<string, TrafficPrediction> = {};
+
+      for (const item of trafficConditions) {
+        try {
+          const pred = await predictTraffic({
+            junctionId: item.junctionId,
+            junctionName: item.junctionName,
+            vehicleCount: item.vehicleCount,
+            averageSpeed: item.averageSpeed,
+            density: item.density,
+            congestionIndex: item.congestionIndex,
+          });
+          if (isMounted) {
+            results[item.junctionId] = pred;
+          }
+        } catch (err: any) {
+          console.error(`Prediction failed for junction ${item.junctionId}:`, err);
+          if (isMounted) {
+            setPredictionError(err?.message || "Failed to load ML predictions");
+          }
+        }
+      }
+
+      if (isMounted) {
+        setPredictions(results);
+        setIsLoadingPredictions(false);
+      }
+    }
+
+    loadMLPredictions();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const activePrediction = predictions[selectedJunction] || Object.values(predictions)[0];
+
 
   return (
     <div className="flex h-screen w-full bg-[#07090e] text-slate-100 overflow-hidden font-sans">
@@ -83,16 +135,30 @@ export const Dashboard: React.FC = () => {
                 </p>
               </div>
 
-              {/* Quick Action Matrix Buttons */}
+              {/* Quick Action Matrix Buttons & ML Status */}
               <div className="flex flex-wrap items-center gap-3">
                 <div className="p-3 rounded-xl bg-slate-900/90 border border-cyan-500/30 text-left font-mono">
-                  <span className="text-[10px] text-cyan-400 block">AI REDUCTION FACTOR</span>
-                  <span className="text-xl font-bold text-white">-34.2% IDLE DELAY</span>
+                  <span className="text-[10px] text-cyan-400 block flex items-center gap-1.5">
+                    <BrainCircuit className="w-3.5 h-3.5 text-cyan-400" />
+                    LIVE ML PREDICTION // {activePrediction?.junctionId || selectedJunction}
+                  </span>
+                  <span className="text-xl font-bold text-white">
+                    {isLoadingPredictions
+                      ? "INFERRING..."
+                      : activePrediction
+                      ? `${activePrediction.predictedClass?.toUpperCase()} (${activePrediction.predictedCongestionScore}%)`
+                      : "STANDBY"}
+                  </span>
                 </div>
-                <button className="px-4 py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-mono font-bold text-xs uppercase tracking-wider flex items-center gap-2 shadow-lg shadow-cyan-500/25 transition">
-                  <Zap className="w-4 h-4 fill-current" />
-                  TRIGGER ADAPTIVE WAVE
-                </button>
+                <div className="p-3 rounded-xl bg-slate-900/90 border border-slate-800 text-left font-mono hidden sm:block">
+                  <span className="text-[10px] text-slate-400 block flex items-center gap-1">
+                    <Cpu className="w-3 h-3 text-emerald-400" />
+                    MODEL BACKEND
+                  </span>
+                  <span className="text-xs font-bold text-emerald-400">
+                    {activePrediction?.model?.name || "RandomForest (100 Trees)"}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
@@ -208,6 +274,8 @@ export const Dashboard: React.FC = () => {
               <CongestionCard
                 key={condition.junctionId}
                 condition={condition}
+                prediction={predictions[condition.junctionId]}
+                isLoading={isLoadingPredictions}
                 onSelect={(id) => setSelectedJunction(id)}
               />
             ))}

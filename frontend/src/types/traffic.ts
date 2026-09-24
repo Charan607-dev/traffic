@@ -44,6 +44,27 @@ export interface TrafficCondition {
     estimatedIdleTime: number;
 }
 
+export interface TrafficPrediction {
+    junctionId?: string;
+    predictedCongestionIndex: number;
+    predictedCongestionScore: number;
+    congestionLevel: "Low" | "Moderate" | "High" | "Very High" | string;
+    predictedClass: string;
+    classProbabilities: Record<string, number> | null;
+    featuresUsed?: Record<string, number>;
+    model?: {
+        name: string;
+        type: string;
+        nEstimators: number;
+        classes?: string[];
+        featureCount: number;
+        featureOrder?: string[];
+        source: string;
+        loader?: string;
+        retrained: boolean;
+    };
+}
+
 // Bottleneck detected by the AI system
 
 export interface Bottleneck {

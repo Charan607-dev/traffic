@@ -138,10 +138,21 @@ class RequestHandler(BaseHTTPRequestHandler):
         data = json.loads(body) if body else {}
 
         if self.path == "/api/predict":
-            clean_item = clean_traffic_data(data)
-            pred = predict_traffic(clean_item["junction_id"], clean_item["vehicle_count"])
-            self._set_headers(200)
-            self.wfile.write(json.dumps(pred).encode())
+            try:
+                clean_item = clean_traffic_data(data)
+                pred = predict_traffic(
+                    clean_item["junction_id"],
+                    data.get("vehicleCount", data.get("vehicle_count", data.get("Vehicle Count"))),
+                    traffic_features=data
+                )
+                self._set_headers(200)
+                self.wfile.write(json.dumps(pred).encode())
+            except Exception as error:
+                self._set_headers(500)
+                self.wfile.write(json.dumps({
+                    "error": "Prediction failed",
+                    "detail": str(error)
+                }).encode())
             return
 
         if self.path == "/api/routes":
