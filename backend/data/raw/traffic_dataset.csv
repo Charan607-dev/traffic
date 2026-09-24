@@ -1,0 +1,13 @@
+timestamp,junction_id,junction_name,vehicle_count,average_speed_kmh,weather_condition,day_of_week,is_holiday,congestion_level
+2026-09-24 08:00:00,J-01,Central Plaza,145,18.5,Clear,Thursday,0,High
+2026-09-24 08:00:00,J-02,Tech Park Cross,90,32.4,Clear,Thursday,0,Moderate
+2026-09-24 08:00:00,J-03,Metro Interchange,178,11.2,Rain,Thursday,0,Very High
+2026-09-24 08:00:00,J-04,Harbor Bridge,54,48.0,Clear,Thursday,0,Low
+2026-09-24 09:00:00,J-01,Central Plaza,162,14.0,Clear,Thursday,0,Very High
+2026-09-24 09:00:00,J-02,Tech Park Cross,98,29.5,Clear,Thursday,0,Moderate
+2026-09-24 09:00:00,J-03,Metro Interchange,185,9.8,Rain,Thursday,0,Very High
+2026-09-24 09:00:00,J-04,Harbor Bridge,60,45.2,Clear,Thursday,0,Low
+2026-09-24 10:00:00,J-01,Central Plaza,115,24.1,Clear,Thursday,0,Moderate
+2026-09-24 10:00:00,J-02,Tech Park Cross,72,38.0,Clear,Thursday,0,Low
+2026-09-24 10:00:00,J-03,Metro Interchange,135,19.5,Clear,Thursday,0,High
+2026-09-24 10:00:00,J-04,Harbor Bridge,42,51.0,Clear,Thursday,0,Low

@@ -1,0 +1,151 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700;800&family=Cinzel:wght@700;900&display=swap');
+@import "tailwindcss";
+
+:root {
+  --font-display: 'Space Grotesk', -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-accent: 'Cinzel', serif;
+  
+  --color-cyber-cyan: #00f3ff;
+  --color-neon-pink: #ff007f;
+  --color-acid-yellow: #faff00;
+  --color-matrix-green: #00ff66;
+  --color-blueprint-blue: #0b2545;
+  --color-aged-paper: #f0e6d2;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font-display);
+  background-color: #07090e;
+  color: #f1f5f9;
+  background-image: 
+    radial-gradient(circle at 10% 20%, rgba(0, 243, 255, 0.05) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(255, 0, 127, 0.06) 0%, transparent 40%),
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 32px 32px, 32px 32px;
+  overflow-x: hidden;
+}
+
+/* Halftone and Cyber Texture Overlays */
+.halftone-dot {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.15) 1px, transparent 1px);
+  background-size: 6px 6px;
+}
+
+.halftone-cyan {
+  background-image: radial-gradient(rgba(0, 243, 255, 0.25) 1px, transparent 1px);
+  background-size: 8px 8px;
+}
+
+/* Torn Collage Paper Edges & Tape Decals */
+.paper-tear-edge {
+  position: relative;
+  clip-path: polygon(
+    0% 0%, 
+    100% 0%, 
+    99% 96%, 97% 99%, 95% 95%, 93% 98%, 91% 94%, 88% 99%, 85% 95%, 82% 98%, 79% 95%, 75% 99%, 
+    72% 94%, 69% 98%, 66% 95%, 62% 99%, 59% 95%, 55% 98%, 51% 94%, 48% 99%, 44% 95%, 40% 98%, 
+    36% 94%, 32% 99%, 28% 95%, 24% 98%, 20% 94%, 16% 99%, 12% 95%, 8% 98%, 4% 94%, 1% 98%, 
+    0% 95%
+  );
+}
+
+.torn-tape {
+  position: absolute;
+  height: 20px;
+  width: 90px;
+  background: rgba(240, 230, 210, 0.35);
+  backdrop-filter: blur(4px);
+  border-left: 2px dashed rgba(255, 255, 255, 0.5);
+  border-right: 2px dashed rgba(255, 255, 255, 0.5);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+  transform: rotate(-3deg);
+  z-index: 20;
+  pointer-events: none;
+}
+
+.torn-tape-cyan {
+  position: absolute;
+  height: 18px;
+  width: 75px;
+  background: rgba(0, 243, 255, 0.25);
+  border-left: 2px dashed rgba(0, 243, 255, 0.8);
+  border-right: 2px dashed rgba(0, 243, 255, 0.8);
+  box-shadow: 0 0 12px rgba(0, 243, 255, 0.4);
+  transform: rotate(5deg);
+  z-index: 20;
+  pointer-events: none;
+}
+
+/* Blueprint Sketch Stamp */
+.blueprint-badge {
+  background: #091a2e;
+  border: 1px dashed #00f3ff;
+  color: #00f3ff;
+  font-family: var(--font-mono);
+  box-shadow: inset 0 0 12px rgba(0, 243, 255, 0.15);
+}
+
+/* Neon Glows */
+.glow-cyan {
+  text-shadow: 0 0 8px rgba(0, 243, 255, 0.7), 0 0 20px rgba(0, 243, 255, 0.4);
+}
+
+.glow-pink {
+  text-shadow: 0 0 8px rgba(255, 0, 127, 0.7), 0 0 20px rgba(255, 0, 127, 0.4);
+}
+
+.box-glow-cyan {
+  box-shadow: 0 0 20px rgba(0, 243, 255, 0.15), inset 0 0 15px rgba(0, 243, 255, 0.05);
+}
+
+.box-glow-pink {
+  box-shadow: 0 0 20px rgba(255, 0, 127, 0.15), inset 0 0 15px rgba(255, 0, 127, 0.05);
+}
+
+/* Collage Brutalist Card */
+.collage-card {
+  background: rgba(13, 17, 26, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.collage-card:hover {
+  transform: translateY(-2px) scale(1.005);
+  border-color: rgba(0, 243, 255, 0.4);
+}
+
+/* Scanline animation */
+@keyframes scanline {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(1000%); }
+}
+
+.scanline {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(0, 243, 255, 0.6), transparent);
+  animation: scanline 8s linear infinite;
+  pointer-events: none;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #07090e;
+}
+::-webkit-scrollbar-thumb {
+  background: #1f293d;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #00f3ff;
+}
