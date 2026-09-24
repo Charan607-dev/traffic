@@ -1,15 +1,26 @@
 import { ArrowRight, MapPin, Navigation } from "lucide-react";
 import { useState } from "react";
 
-function RoutePlanner() {
+interface RoutePlannerProps {
+    onRouteSearch?: (start: string, destination: string) => void;
+}
+
+function RoutePlanner({ onRouteSearch }: RoutePlannerProps) {
     const [start, setStart] = useState("");
     const [destination, setDestination] = useState("");
 
     const handlePlanRoute = () => {
+        if (!start.trim() || !destination.trim()) return;
+
         console.log("Planning route:", {
             start,
             destination,
         });
+
+        // Send locations to the parent/map component
+        if (onRouteSearch) {
+            onRouteSearch(start.trim(), destination.trim());
+        }
     };
 
     return (
@@ -39,6 +50,11 @@ function RoutePlanner() {
                         <input
                             value={start}
                             onChange={(event) => setStart(event.target.value)}
+                            onKeyDown={(event) => {
+                                if (event.key === "Enter") {
+                                    handlePlanRoute();
+                                }
+                            }}
                             placeholder="Enter starting location"
                             className="w-full rounded-xl border border-gray-700 bg-gray-950 py-3 pl-10 pr-4 text-sm text-white outline-none transition placeholder:text-gray-600 focus:border-blue-500"
                         />
@@ -65,6 +81,11 @@ function RoutePlanner() {
                             onChange={(event) =>
                                 setDestination(event.target.value)
                             }
+                            onKeyDown={(event) => {
+                                if (event.key === "Enter") {
+                                    handlePlanRoute();
+                                }
+                            }}
                             placeholder="Enter destination"
                             className="w-full rounded-xl border border-gray-700 bg-gray-950 py-3 pl-10 pr-4 text-sm text-white outline-none transition placeholder:text-gray-600 focus:border-blue-500"
                         />
@@ -73,7 +94,7 @@ function RoutePlanner() {
 
                 <button
                     onClick={handlePlanRoute}
-                    disabled={!start || !destination}
+                    disabled={!start.trim() || !destination.trim()}
                     className="rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-40"
                 >
                     Find Routes

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import RoutePlanner from "../components/routes/RoutePlanner";
 import RouteComparison from "../components/routes/RouteComparison";
+import TrafficMap from "../components/map/TrafficMap";
 import Header from "../components/layout/Header";
 import Sidebar from "../components/layout/Sidebar";
 import { Navigation, Compass, Sparkles, ShieldCheck } from "lucide-react";
@@ -65,6 +66,19 @@ function RoutePlannerPage() {
                     {/* Routing form widget */}
                     <div className="collage-card rounded-2xl p-5 border border-slate-800">
                         <RoutePlanner />
+                    </div>
+
+                    {/* Interactive Telemetry & Google Map Corridor */}
+                    <div className="collage-card rounded-2xl p-5 border border-slate-800">
+                        <div className="mb-4 flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <Compass className="w-5 h-5 text-cyan-400" />
+                                <h3 className="font-mono font-bold text-sm text-cyan-200 tracking-wider uppercase">
+                                    GEOSPATIAL ROUTE CORRIDOR & TELEMETRY
+                                </h3>
+                            </div>
+                        </div>
+                        <TrafficMap />
                     </div>
 
                     {/* Route Comparison Matrix */}
