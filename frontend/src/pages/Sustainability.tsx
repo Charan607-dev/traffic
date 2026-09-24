@@ -10,13 +10,51 @@ import {
     ShieldCheck,
 } from "lucide-react";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Header from "../components/layout/Header";
 import Sidebar from "../components/layout/Sidebar";
+import { getSustainabilityMetrics } from "../services/api";
+
+interface SustainabilityData {
+    before: Record<string, number | string>;
+    after: Record<string, number | string>;
+    summary: Record<string, number | string>;
+}
+
+const DEFAULT_METRICS: SustainabilityData = {
+    before: { fuelConsumption: 0, co2Emissions: 0, idleTime: 0, noiseScore: 0 },
+    after: { fuelSaved: 0, co2Reduced: 0, idleTimeReduced: 0, noiseScore: 0, fuelSavingPercentage: 0, co2ReductionPercentage: 0, idleTimeReductionPercentage: 0 },
+    summary: { totalFuelSaved: 0, totalCO2Reduced: 0, totalIdleTimeReduced: 0, averageNoiseScore: 0 },
+};
 
 function Sustainability() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+    const [metrics, setMetrics] = useState<SustainabilityData>(DEFAULT_METRICS);
+    const [isLoading, setIsLoading] = useState(true);
+    const [apiError, setApiError] = useState<string | null>(null);
+
+    useEffect(() => {
+        let isMounted = true;
+        async function loadMetrics() {
+            try {
+                const data = await getSustainabilityMetrics();
+                if (isMounted) {
+                    setMetrics(data);
+                    setApiError(null);
+                }
+            } catch (err: any) {
+                console.error("Failed to fetch sustainability metrics:", err);
+                if (isMounted) {
+                    setApiError(err?.message || "Failed to fetch sustainability metrics");
+                }
+            } finally {
+                if (isMounted) setIsLoading(false);
+            }
+        }
+        loadMetrics();
+        return () => { isMounted = false; };
+    }, []);
 
     return (
         <div className="flex h-screen w-full bg-[#07090e] text-slate-100 overflow-hidden font-sans">

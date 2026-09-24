@@ -122,6 +122,7 @@ def preprocess_traffic_dataset(
 
         parsed_timestamp = pd.to_datetime(
             df["timestamp"],
+            format="mixed",
             errors="coerce"
         )
 

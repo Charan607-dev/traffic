@@ -8,14 +8,41 @@ import {
     Radio,
 } from "lucide-react";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Header from "../components/layout/Header";
 import Sidebar from "../components/layout/Sidebar";
-import { bottlenecks } from "../data/demoTrafficData";
+import { getBottlenecks } from "../services/api";
+import { bottlenecks as demoBottlenecks } from "../data/demoTrafficData";
+import type { Bottleneck } from "../types/traffic";
 
 function Bottlenecks() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+    const [bottlenecks, setBottlenecks] = useState<Bottleneck[]>(demoBottlenecks);
+    const [isLoading, setIsLoading] = useState(true);
+    const [apiError, setApiError] = useState<string | null>(null);
+
+    useEffect(() => {
+        let isMounted = true;
+        async function loadBottlenecks() {
+            try {
+                const data = await getBottlenecks();
+                if (isMounted) {
+                    setBottlenecks(data);
+                    setApiError(null);
+                }
+            } catch (err: any) {
+                console.error("Failed to fetch bottlenecks from backend:", err);
+                if (isMounted) {
+                    setApiError(err?.message || "Failed to fetch bottlenecks");
+                }
+            } finally {
+                if (isMounted) setIsLoading(false);
+            }
+        }
+        loadBottlenecks();
+        return () => { isMounted = false; };
+    }, []);
 
     return (
         <div className="flex h-screen w-full bg-[#07090e] text-slate-100 overflow-hidden font-sans">

@@ -135,7 +135,12 @@ class RequestHandler(BaseHTTPRequestHandler):
     def do_POST(self):
         content_length = int(self.headers.get("Content-Length", 0))
         body = self.rfile.read(content_length).decode() if content_length > 0 else "{}"
-        data = json.loads(body) if body else {}
+        try:
+            data = json.loads(body) if body else {}
+        except json.JSONDecodeError as err:
+            self._set_headers(400)
+            self.wfile.write(json.dumps({"error": "Invalid JSON body", "detail": str(err)}).encode())
+            return
 
         if self.path == "/api/predict":
             try:
@@ -215,7 +220,7 @@ class RequestHandler(BaseHTTPRequestHandler):
 def run_server(port=None):
     if port is None:
         import os
-        port = int(os.environ.get("PORT", 8080))
+        port = int(os.environ.get("PORT", 8081))
     server_address = ("127.0.0.1", port)
     httpd = HTTPServer(server_address, RequestHandler)
     print(f"Urban Traffic AI Backend listening on http://localhost:{port}")

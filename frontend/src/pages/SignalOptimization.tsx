@@ -9,14 +9,41 @@ import {
     Activity,
 } from "lucide-react";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Header from "../components/layout/Header";
 import Sidebar from "../components/layout/Sidebar";
-import { signalRecommendations } from "../data/demoTrafficData";
+import { getSignalRecommendations } from "../services/api";
+import { signalRecommendations as demoSignalRecommendations } from "../data/demoTrafficData";
+import type { SignalRecommendation } from "../types/traffic";
 
 function SignalOptimization() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+    const [signalRecommendations, setSignalRecommendations] = useState<SignalRecommendation[]>(demoSignalRecommendations);
+    const [isLoading, setIsLoading] = useState(true);
+    const [apiError, setApiError] = useState<string | null>(null);
+
+    useEffect(() => {
+        let isMounted = true;
+        async function loadSignals() {
+            try {
+                const data = await getSignalRecommendations();
+                if (isMounted) {
+                    setSignalRecommendations(data);
+                    setApiError(null);
+                }
+            } catch (err: any) {
+                console.error("Failed to fetch signal recommendations from backend:", err);
+                if (isMounted) {
+                    setApiError(err?.message || "Failed to fetch signal recommendations");
+                }
+            } finally {
+                if (isMounted) setIsLoading(false);
+            }
+        }
+        loadSignals();
+        return () => { isMounted = false; };
+    }, []);
 
     return (
         <div className="flex h-screen w-full bg-[#07090e] text-slate-100 overflow-hidden font-sans">
